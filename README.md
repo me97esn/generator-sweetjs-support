@@ -30,10 +30,10 @@ $ yo angular
 $ yo sweetjs-support
 ```
 
-To test if it works: Rename 
+To test if it works:  
 ```
 $ mv app/scripts/app.js app/scripts/app.sjs
 $ grunt serve
 ```
 
-The app.sjs file should be renamed to .tmp/app.js and working.
+The app.sjs file should be copied and renamed to .tmp/app.js and working.
