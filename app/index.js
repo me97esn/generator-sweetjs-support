@@ -4,13 +4,21 @@ var path = require('path');
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 
+
+
 var SweetjsSupportGenerator = yeoman.generators.Base.extend({
   init: function() {
     this.pkg = yeoman.file.readJSON(path.join(__dirname, '../package.json'));
 
+    this.updateFile = function(path, hook, text) {
+      var file = this.readFileAsString(path);
+      if (file.indexOf(text) === -1) {
+        this.write(path, file.replace(hook, hook + '\n\n' + text));
+      }
+    }
+
     this.on('end', function() {
       if (!this.options['skip-install']) {
-        console.log('::::::: running npm install ::::::');
         this.npmInstall();
       }
     });
@@ -19,14 +27,10 @@ var SweetjsSupportGenerator = yeoman.generators.Base.extend({
   gruntSweetjs: function() {
     var hook = "require('load-grunt-tasks')(grunt);",
       path = './Gruntfile.js',
-      file = this.readFileAsString(path),
-      insert = "grunt.loadNpmTasks('grunt-sweet.js');";
-    console.log(file);
-    console.log(file.indexOf(insert));
-    if (file.indexOf(insert) === -1) {
-      this.write(path, file.replace(hook, hook  + '\n\n' + insert ));
-    }
-  },sweetjs: function() {
+      insert = "  grunt.loadNpmTasks('grunt-sweet.js');";
+    this.updateFile(path, hook, insert);
+  },
+  sweetjs: function() {
     var hook = ' grunt.initConfig({',
       path = './Gruntfile.js',
       file = this.readFileAsString(path),
@@ -57,65 +61,41 @@ var SweetjsSupportGenerator = yeoman.generators.Base.extend({
         }]\n\
       }\n\
     },";
-    console.log(file);
-    console.log(file.indexOf(insert));
-    if (file.indexOf(insert) === -1) {
-      this.write(path, file.replace(hook, hook  + '\n\n' + insert ));
-    }
-  },watch: function() {
+    this.updateFile(path, hook, insert);
+  },
+  watch: function() {
     var hook = 'watch: {',
       path = './Gruntfile.js',
-      file = this.readFileAsString(path),
       insert = "\n\
       sweetjs: {\n\
         files: ['<%= yeoman.app %>/scripts/**/*.sjs'],\n\
         tasks: ['sweetjs']\n\
       },";
-    console.log(file);
-    console.log(file.indexOf(insert));
-    if (file.indexOf(insert) === -1) {
-      this.write(path, file.replace(hook, hook  + '\n\n' + insert ));
-    }
-  },concurrentServer: function() {
+    this.updateFile(path, hook, insert);
+  },
+  concurrentServer: function() {
     var hook = 'server: [',
       path = './Gruntfile.js',
-      file = this.readFileAsString(path),
-      insert = "'sweetjs',";
-    console.log(file);
-    console.log(file.indexOf(insert));
-    if (file.indexOf(insert) === -1) {
-      this.write(path, file.replace(hook, hook  + '\n\n' + insert ));
-    }
-  },concurrentTest: function() {
+      insert = "        'sweetjs',";
+      this.updateFile(path, hook, insert);
+  },
+  concurrentTest: function() {
     var hook = 'test: [',
       path = './Gruntfile.js',
-      file = this.readFileAsString(path),
-      insert = "'sweetjs',";
-    console.log(file);
-    console.log(file.indexOf(insert));
-    if (file.indexOf(insert) === -1) {
-      this.write(path, file.replace(hook, hook  + '\n\n' + insert ));
-    }
-  },concurrentDist: function() {
+      insert = "        'sweetjs',";
+      this.updateFile(path, hook, insert);
+  },
+  concurrentDist: function() {
     var hook = 'dist: [',
       path = './Gruntfile.js',
-      file = this.readFileAsString(path),
-      insert = "'sweetjs',";
-    console.log(file);
-    console.log(file.indexOf(insert));
-    if (file.indexOf(insert) === -1) {
-      this.write(path, file.replace(hook, hook  + '\n\n' + insert ));
-    }
-  },packageJson: function() {
+      insert = "        'sweetjs',";
+      this.updateFile(path, hook, insert);
+  },
+  packageJson: function() {
     var hook = ' "devDependencies": {',
       path = './package.json',
-      file = this.readFileAsString(path),
       insert = '"grunt-sweet.js": "~0.1.4",';
-    console.log(file);
-    console.log(file.indexOf(insert));
-    if (file.indexOf(insert) === -1) {
-      this.write(path, file.replace(hook, hook  + '\n\n' + insert ));
-    }
+      this.updateFile(path, hook, insert);
   }
 });
 
